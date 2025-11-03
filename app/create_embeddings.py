@@ -121,21 +121,33 @@ def create_embeddings(
 
     return embedding_df
 
-def build_embedding_matrix(df: pd.DataFrame) -> np.ndarray:
-    """
-    Convert stringified embeddings into a numeric NumPy matrix.
+def embedding_matrix(df: pd.DataFrame,
+                     matrix_path: str | None = None,
+                     rebuild: bool = False) -> np.ndarray:
+    """Create or load existing embeddings into a numeric NumPy matrix."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    matrix_path = matrix_path or os.path.join(base_dir, CONFIG["embeddings_dir"], "embedding_matrix.npy")
 
-    Args:
-        df: DataFrame with an 'embedding' column containing stringified vectors.
+    if not rebuild and os.path.exists(matrix_path):
+        try:
+            logging.info(f"📦 Loading existing embedding matrix from {matrix_path}")
+            emb_matrix = np.load(matrix_path)
+            logging.info(f"✅ Embedding matrix loaded successfully (shape: {emb_matrix.shape})")
+            return emb_matrix
+        except Exception as e:
+            logging.warning(f"⚠️ Failed to load embedding matrix ({e}). Rebuilding...")
 
-    Returns:
-        NumPy array of shape (num_movies, embedding_dim).
-    """
     if 'embedding' not in df.columns:
         raise ValueError("DataFrame must contain an 'embedding' column.")
 
-    df['embedding'] = df['embedding'].apply(ast.literal_eval)
+    if isinstance(df['embedding'].iloc[0], str):
+        df['embedding'] = df['embedding'].apply(ast.literal_eval)
+
     emb_matrix = np.array(df['embedding'].to_list(), dtype=float)
+    os.makedirs(os.path.dirname(matrix_path), exist_ok=True)
+    np.save(matrix_path, emb_matrix)
+    logging.info(f"💾 Embedding matrix saved → {matrix_path}")
+
     return emb_matrix
 
 
