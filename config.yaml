@@ -1,0 +1,18 @@
+data_dir: "../data/ml-32m"
+model_dir: "../models"
+embeddings_dir: "../data/embeddings"
+
+ratings_file: "ratings.csv"
+movies_file: "movies.csv"
+tags_file: "tags.csv"
+model_file: "svd_model.pkl"
+embeddings_file: "movie_embeddings.csv"
+
+test_size: 0.2
+random_state: 42
+
+svd_params:
+  n_factors: 100
+  reg_all: 0.02
+
+embedding_model: "text-embedding-3-small"
