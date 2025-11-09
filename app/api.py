@@ -7,7 +7,10 @@ import numpy as np
 import os
 import joblib
 import logging
+from dotenv import load_dotenv
 
+load_dotenv()
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 app = FastAPI(title="Movie Recommender API")
 
@@ -58,7 +61,7 @@ else:
 
 @app.get("/")
 def root():
-    return {"message": "Movie Recommendation API is live."}
+    return {"message": "Movie Recommendation API is live.{}"}
 
 
 @app.get("/recommend/user/{user_id}")
@@ -66,7 +69,7 @@ def recommend_for_user(user_id: int, top_n: int = 10):
     """Return top-N SVD recommendations for a user."""
     try:
         recs = recommend_svd_ids(df_all, model, user_id, top_n=top_n)
-        recs ['poster'] = recs['movieId'].apply(lambda x: get_poster(x, links_df, os.getenv("TMDB_API_KEY")))
+        recs ['poster'] = recs['movieId'].apply(lambda x: get_poster(x, links_df, TMDB_API_KEY))
         return recs.to_dict(orient="records")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -77,7 +80,7 @@ def similar(movie_id: int, top_k: int = 10):
     """Return top-K similar movies based on embeddings."""
     try:
         sims = similar_movies(movie_id, emb_df, emb_matrix_np, top_k=top_k)
-        sims['poster'] = sims['movieId'].apply(lambda x: get_poster(x, links_df, os.getenv("TMDB_API_KEY")))
+        sims['poster'] = sims['movieId'].apply(lambda x: get_poster(x, links_df, TMDB_API_KEY))
         return sims.to_dict(orient="records")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

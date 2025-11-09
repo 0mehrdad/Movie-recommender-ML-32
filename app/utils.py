@@ -83,16 +83,16 @@ def get_poster(movieId: int, links_df: pd.DataFrame, api_key: str) -> str | None
     tmdbId = get_tmdb_id(links_df, movieId)
     try:
         resp = requests.get(
-            f"https://api.themoviedb.org/3/search/movie/{tmdbId}",
+            f"https://api.themoviedb.org/3/movie/{tmdbId}",
             params={"api_key": api_key},
             timeout=5
         )
         resp.raise_for_status()
-        data = resp.json().get("results", [])
+        data = resp.json()
         if not data:
             return None
 
-        poster_path = data[0].get("poster_path")
+        poster_path = data.get("poster_path")
         if not poster_path:
             return None
 
