@@ -11,6 +11,8 @@ It includes:
 
 This is NOT the AWS version.  
 This version is heavier and includes both endpoints + UI.
+
+
 For the AWS version:
 
 👉 Live App: https://movie-recommender-frontend-bx3xdouaxpshlaeiw5b4rk.streamlit.app/
@@ -157,6 +159,7 @@ AWS Version:
 - Streamlit hosted separately
 - Lightweight backend
 ```
+
 
 
 
