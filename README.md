@@ -1,61 +1,60 @@
-🎬 Movie Recommender — Local Full Version (FastAPI + Streamlit + SVD + Embeddings)
+# 🎬 Movie Recommender (Local Version: FastAPI + Streamlit + SVD + Embeddings)
 
-This repository contains the complete local version of the movie recommendation system.
-It includes both:
+This repository contains the full local version of the movie recommendation system.  
+It includes:
 
-✔ Backend — FastAPI
-✔ Frontend — Streamlit UI
-✔ ML Models — SVD & Embeddings
-✔ Poster Fetching via TMDB API
+✔ FastAPI backend  
+✔ Streamlit frontend  
+✔ SVD-based user recommendations  
+✔ Embedding-based movie similarity  
+✔ TMDB poster integration  
 
-This version runs entirely on your local machine and exposes two recommendation endpoints.
+This is NOT the AWS version.  
+This version is heavier and includes both endpoints + UI.
 
-🚀 Features
-🔹 FastAPI Backend
+---
 
-Provides 2 full endpoints:
+## 🚀 Features
 
-User-based Recommendations (SVD)
+### 1. FastAPI Backend
 
+Exposes two endpoints:
+
+```
 GET /recommend/user/{user_id}?top_n=10
-
-
-Movie-to-Movie Similarity (Embeddings)
-
 GET /similar/{movie_id}?top_k=10
+```
 
-🔹 Streamlit Frontend (Local Only)
+### 2. Streamlit Frontend
 
-Built into this same repo (app.py)
+- Located in `app.py`
+- Calls the local API
+- Displays posters, ratings, similarities
 
-Calls the local FastAPI backend
+### 3. Local ML Models
 
-Shows posters + scores
+- SVD trained on MovieLens
+- Embeddings generated from movie tags
+- Loads saved models or trains if missing
 
-Lets users test both recommenders interactively
+---
 
-🔹 Local ML Models
+## 📁 Project Structure
 
-SVD model trained on MovieLens ratings
-
-Embedding matrix generated from movie tags
-
-Automated loading or training based on saved files
-
-📁 Project Structure (Correct)
+```
 Movie-recommender-ML-32/
 │
-├── app.py                     # Streamlit frontend (local UI)
-├── config.yaml                # Config for model/data paths
+├── app.py
+├── config.yaml
 ├── requirements.txt
 ├── Dockerfile
 ├── README.md
 │
 ├── app/
-│   ├── api.py                 # FastAPI backend with 2 endpoints
-│   ├── train_svd.py           # SVD training + loading
-│   ├── create_embeddings.py   # Embedding creation & loading
-│   ├── utils.py               # Poster fetching, helpers
+│   ├── api.py
+│   ├── train_svd.py
+│   ├── create_embeddings.py
+│   ├── utils.py
 │   └── __init__.py
 │
 ├── notebooks/
@@ -63,63 +62,94 @@ Movie-recommender-ML-32/
 │   └── models.ipynb
 │
 └── image_loader.ipynb
+```
 
-🔌 How It Works
-🧠 1. SVD Model (User Recommendations)
+---
 
-Uses MovieLens ratings
+## How the System Works
 
-Trains/loads SVD model
+### 1. SVD Model (User Recommendations)
 
-Predicts unseen movie ratings
+- Trained using MovieLens ratings  
+- Predicts ratings for unseen movies  
+- Returned via `/recommend/user/{id}`
 
-Returned via /recommend/user/{id}
+### 2. Embedding Model (Movie Similarity)
 
-🤖 2. Embedding Model (Movie Similarity)
+- Uses movie tags  
+- Generates text embeddings  
+- Computes cosine similarity  
+- Returned via `/similar/{movie_id}`
 
-Uses movie tags
+### 3. 🖼 TMDB Poster Fetching
 
-Generates embeddings
+- Uses links.csv to map movieId -> tmdbId  
+- Fetches posters with TMDB API  
+- Requires TMDB_API_KEY in `.env`
 
-Computes cosine similarity
+### 4. 🌐 Streamlit UI
 
-Returned via /similar/{movie_id}
+- Calls FastAPI backend  
+- Shows posters, titles, scores  
+- Two tabs:
+  - User Recommendations
+  - Similar Movies
 
-🖼 3. Posters from TMDB
+---
 
-Uses links.csv → tmdbId → poster_path
+## 🛠 Running Locally
 
-Fetched dynamically using TMDB_API_KEY
+### 1. Install dependencies
 
-🌐 4. Streamlit Frontend
-
-Located in app.py, it:
-
-Calls the FastAPI backend running on http://127.0.0.1:8000
-
-Shows posters, scores, similarity
-
-Provides UI tabs:
-
-User Recommendations
-
-Similar Movies
-
-🛠 Run Locally
-1. Install dependencies
+```
 pip install -r requirements.txt
+```
 
-2. Add .env file
-TMDB_API_KEY=your_tmdb_key_here
+### 2. Create .env
 
-3. Run backend
+```
+TMDB_API_KEY=your_api_key_here
+```
+
+### 3. Run FastAPI backend
+
+```
 uvicorn app.api:app --reload
+```
 
+API docs:
 
-API docs → http://127.0.0.1:8000/docs
+```
+http://127.0.0.1:8000/docs
+```
 
-4. Run Streamlit
+### 4. Run Streamlit frontend
+
+```
 streamlit run app.py
+```
 
+Streamlit UI:
 
-UI available on → http://localhost:8501
+```
+http://localhost:8501
+```
+
+---
+
+## Difference From AWS Version
+
+```
+Local Version (this repo):
+- Includes SVD user recommendations
+- Includes embedding similarity
+- Includes Streamlit UI
+- Trains or loads heavy models locally
+
+AWS Version:
+- Only includes similarity endpoint
+- No SVD (too expensive)
+- Streamlit hosted separately
+- Lightweight backend
+```
+
